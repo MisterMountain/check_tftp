@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/sha1"
+	"crypto"
 	"fmt"
 	"io"
 	"os"
@@ -18,12 +18,10 @@ func main() {
 	config.Readme = `TFTP Check Plugin`
 	config.Version = "0.0.1"
 	config.Timeout = 10
-	
+
 	hostname := config.FlagSet.StringP("hostname", "H", "", "hostname of TFTP Server")
 	file := config.FlagSet.StringP("file", "f", "", "file to receive")
 	checksum := config.FlagSet.StringP("checksum", "C", "", "SHA1 checksum of file")
-
-	config.ParseArguments()
 
 	log.Info("Start logging")
 
@@ -59,7 +57,8 @@ func main() {
 	}
 
 	if *checksum != "" {
-		h := sha1.New()
+		// check with BLAKE
+		h := crypto.SHA1.New()
 		if _, err := f.Seek(0, 0); err != nil {
 			check.Exitf(check.Critical, "Failed to seek file: %v", err)
 		}
