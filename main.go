@@ -8,7 +8,6 @@ import (
 
 	"github.com/NETWAYS/go-check"
 	"github.com/pin/tftp/v3"
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -23,11 +22,10 @@ func main() {
 	file := config.FlagSet.StringP("file", "f", "", "file to receive")
 	checksum := config.FlagSet.StringP("checksum", "C", "", "SHA1 checksum of file")
 
-	log.Info("Start logging")
-
-	// print help if none flag is set
+	// print usage if none flag is set
 	if config.FlagSet.NFlag() == 0 {
-		os.Exit(0)
+		config.FlagSet.Usage()
+		os.Exit(3)
 	}
 
 	// Parse the TFTP server address from the hostname flag
