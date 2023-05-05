@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/sha1"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/NETWAYS/go-check"
@@ -12,16 +14,14 @@ import (
 func main() {
 	defer check.CatchPanic()
 	config := check.NewConfig()
-	config.Name = "check_test"
-	config.Readme = `Test Plugin`
+	config.Name = "check_tftp"
+	config.Readme = `TFTP Check Plugin`
 	config.Version = "0.0.1"
 	config.Timeout = 10
-
-	value := config.FlagSet.IntP("value", "", 10, "test value")
-	warning := config.FlagSet.IntP("warning", "w", 20, "warning threshold")
-	critical := config.FlagSet.IntP("critical", "c", 50, "critical threshold")
+	
 	hostname := config.FlagSet.StringP("hostname", "H", "", "hostname of TFTP Server")
 	file := config.FlagSet.StringP("file", "f", "", "file to receive")
+	checksum := config.FlagSet.StringP("checksum", "C", "", "SHA1 checksum of file")
 
 	config.ParseArguments()
 
@@ -58,15 +58,18 @@ func main() {
 		check.Exitf(check.Critical, "Failed to download file: %v", err)
 	}
 
-	check.Exitf(check.OK, "%d bytes received", n)
-
-	// time.Sleep(20 * time.Second)
-
-	if *value > *critical {
-		check.Exitf(check.Critical, "value is %d", *value)
-	} else if *value > *warning {
-		check.Exitf(check.Warning, "value is %d", *value)
-	} else {
-		check.Exitf(check.OK, "value is %d", *value)
+	if *checksum != "" {
+		h := sha1.New()
+		if _, err := f.Seek(0, 0); err != nil {
+			check.Exitf(check.Critical, "Failed to seek file: %v", err)
+		}
+		if _, err := io.Copy(h, f); err != nil {
+			check.Exitf(check.Critical, "Failed to checksum file: %v", err)
+		}
+		if fmt.Sprintf("%x", h.Sum(nil)) != *checksum {
+			check.Exitf(check.Critical, "SHA1 hash mismatch: expected %s, got %s", *checksum, fmt.Sprintf("%x", h.Sum(nil)))
+		}
 	}
+
+	check.Exitf(check.OK, "%d bytes received", n)
 }
