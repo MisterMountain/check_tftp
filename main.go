@@ -22,15 +22,7 @@ func main() {
 	file := config.FlagSet.StringP("file", "f", "", "file to receive")
 	checksum := config.FlagSet.StringP("checksum", "C", "", "SHA1 checksum of file")
 
-<<<<<<< HEAD
-	// print usage if none flag is set
-	if config.FlagSet.NFlag() == 0 {
-		config.FlagSet.Usage()
-		os.Exit(3)
-=======
 	config.ParseArguments()
-
-	log.Info("Start logging")
 
 	if *hostname == "" || *file == "" {
 		var missing string
@@ -45,7 +37,6 @@ func main() {
 		}
 		config.FlagSet.Usage()
 		check.Exitf(check.Unknown, "Missing required arguments: %s", missing)
->>>>>>> 4c628a2 (fixed the usage output if too less flags are set)
 	}
 
 	// Parse the TFTP server address from the hostname flag
