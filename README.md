@@ -20,6 +20,7 @@ Flags:
 ## Build it yourself
 
 Prerequisites: Glibc and golang
+
 Inside the plugin directory simply type
 ```sh
 go build
