@@ -5,7 +5,7 @@ This is basically a rewrite of the existing perl Monitoring Plugin [check_tftp](
 
 ## Usage
 
-```bash
+```sh
 Usage:
     check_tftp [flags]
 
