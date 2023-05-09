@@ -66,18 +66,28 @@ func main() {
 	}
 
 	if *checksum != "" {
-		// check with SHA1
-		h := sha1.New()
-		if _, err := f.Seek(0, 0); err != nil {
-			check.Exitf(check.Critical, "Failed to seek file: %v", err)
-		}
-		if _, err := io.Copy(h, f); err != nil {
-			check.Exitf(check.Critical, "Failed to checksum file: %v", err)
-		}
-		if fmt.Sprintf("%x", h.Sum(nil)) != *checksum {
-			check.Exitf(check.Critical, "SHA1 hash mismatch: expected %s, got %s", *checksum, fmt.Sprintf("%x", h.Sum(nil)))
-		}
+		verifyChecksum(*file, *checksum)
 	}
 
 	check.Exitf(check.OK, "%d bytes received", n)
+}
+
+func verifyChecksum(file string, checksum string) bool {
+	f, err := os.Open(file)
+	if err != nil {
+		check.Exitf(check.Critical, "Failed to open file: %v", err)
+	}
+	defer f.Close()
+
+	h := sha1.New()
+	if _, err := f.Seek(0, 0); err != nil {
+		check.Exitf(check.Critical, "Failed to seek file: %v", err)
+	}
+	if _, err := io.Copy(h, f); err != nil {
+		check.Exitf(check.Critical, "Failed to checksum file: %v", err)
+	}
+	if fmt.Sprintf("%x", h.Sum(nil)) != checksum {
+		check.Exitf(check.Critical, "SHA1 hash mismatch: expected %s, got %s", checksum, fmt.Sprintf("%x", h.Sum(nil)))
+	}
+	return true
 }
