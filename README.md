@@ -21,8 +21,8 @@ Flags:
 
 Prerequisites: Glibc and golang
 Inside the plugin directory simply type
-```go
-go build .
+```sh
+go build
 ```
 
 ## License
