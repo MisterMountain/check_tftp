@@ -26,31 +26,9 @@ func main() {
 
 	inputError(*hostname, *file, config)
 
-	// Parse the TFTP server address from the hostname flag
-	address := fmt.Sprintf("%s:69", *hostname)
+	client := openConnection(*hostname)
 
-	// Open a connection to the TFTP server
-	client, err := tftp.NewClient(address)
-	if err != nil {
-		check.Exitf(check.Critical, "Failed to create TFTP client: %v", err)
-	}
-
-	// Download the file
-	wt, err := client.Receive(*file, "octet")
-	if err != nil {
-		check.Exitf(check.Critical, "Failed to start TFTP transfer: %v", err)
-	}
-
-	f, err := os.Create(*file)
-	if err != nil {
-		check.Exitf(check.Critical, "Failed to create file: %v", err)
-	}
-	defer f.Close()
-
-	n, err := wt.WriteTo(f)
-	if err != nil {
-		check.Exitf(check.Critical, "Failed to download file: %v", err)
-	}
+	n := fileDownloader(*file, client)
 
 	if *checksum != "" {
 		verifyChecksum(*file, *checksum)
@@ -74,6 +52,33 @@ func inputError(hostname string, file string, config *check.Config) {
 		config.FlagSet.Usage()
 		check.Exitf(check.Unknown, "Missing required arguments: %s", missing)
 	}
+}
+
+func openConnection(hostname string) *tftp.Client {
+	address := fmt.Sprintf("%s:69", hostname)
+	client, err := tftp.NewClient(address)
+	if err != nil {
+		check.Exitf(check.Unknown, "Failed to create TFTP client: %v", err)
+	}
+	return client
+}
+
+func fileDownloader(file string, client *tftp.Client) int64 {
+	wt, err := client.Receive(file, "octet")
+	if err != nil {
+		check.Exitf(check.Critical, "Failed to start TFTP transfer: %v", err)
+	}
+	f, err := os.Create(file)
+	if err != nil {
+		check.Exitf(check.Critical, "Failed to create file: %v", err)
+	}
+	defer f.Close()
+	n, err := wt.WriteTo(f)
+	if err != nil {
+		check.Exitf(check.Critical, "Failed to download file: %v", err)
+	}
+	check.Exitf(check.OK, "%d bytes received", n)
+	return n
 }
 
 func verifyChecksum(file string, checksum string) bool {
