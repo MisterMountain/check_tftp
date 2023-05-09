@@ -3,7 +3,7 @@
 An Icinga check plugin to check TFTP servers.
 This is basically a rewrite of the existing perl check plugin check_tftp: http://william.leibzon.org/nagios/
 
-## Usage 
+## Usage
 
 ```bash
 Usage:
@@ -15,6 +15,7 @@ Flags:
     -f, --file string       File to download from the TFTP server
     -C, --checksum string   Checksum of the File
     -v, --version           version of check_tftp
+```
 
 ## Build it yourself
 
