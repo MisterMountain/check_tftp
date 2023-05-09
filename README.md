@@ -1,7 +1,7 @@
 # check_tftp
 
 An Icinga check plugin to check TFTP servers.
-This is basically a rewrite of the existing perl check plugin check_tftp: http://william.leibzon.org/nagios/
+This is basically a rewrite of the existing perl Monitoring Plugin [check_tftp](http://william.leibzon.org/nagios/)
 
 ## Usage
 
