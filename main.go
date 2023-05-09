@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto"
+	"crypto/sha1"
 	"fmt"
 	"io"
 	"os"
@@ -66,8 +66,8 @@ func main() {
 	}
 
 	if *checksum != "" {
-		// check with BLAKE
-		h := crypto.SHA1.New()
+		// check with SHA1
+		h := sha1.New()
 		if _, err := f.Seek(0, 0); err != nil {
 			check.Exitf(check.Critical, "Failed to seek file: %v", err)
 		}
