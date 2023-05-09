@@ -17,6 +17,12 @@ Flags:
     -v, --version           version of check_tftp
 ```
 
+Example:
+```sh
+check_tftp --hostname localhost --file test --checksum da39a3ee5e6b4b0d3255bfef95601890afd80709
+```
+This downloads the file "test" from the tftp server on localhost, and compares the given checksum with the actual checksum. It returns status code 0 as the checksum verification is correct.
+
 ## Build it yourself
 
 Prerequisites: Glibc and golang
