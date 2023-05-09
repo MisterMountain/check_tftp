@@ -24,25 +24,7 @@ func main() {
 
 	config.ParseArguments()
 
-	inputError(*hostname, *file)
-
-	/*
-		if *hostname == "" || *file == "" {
-			var missing string
-			if *hostname == "" && *file == "" {
-				missing = "hostname and file"
-			}
-			if *hostname == "" && *file != "" {
-				missing = "hostname"
-			}
-			if *hostname != "" && *file == "" {
-				missing = "file"
-			}
-			config.FlagSet.Usage()
-			check.Exitf(check.Unknown, "Missing required arguments: %s", missing)
-		}
-
-	*/
+	inputError(*hostname, *file, config)
 
 	// Parse the TFTP server address from the hostname flag
 	address := fmt.Sprintf("%s:69", *hostname)
@@ -77,7 +59,7 @@ func main() {
 	check.Exitf(check.OK, "%d bytes received", n)
 }
 
-func inputError(hostname string, file string) {
+func inputError(hostname string, file string, config *check.Config) {
 	if hostname == "" || file == "" {
 		var missing string
 		if hostname == "" && file == "" {
@@ -89,6 +71,7 @@ func inputError(hostname string, file string) {
 		if hostname != "" && file == "" {
 			missing = "file"
 		}
+		config.FlagSet.Usage()
 		check.Exitf(check.Unknown, "Missing required arguments: %s", missing)
 	}
 }
